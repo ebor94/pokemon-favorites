@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="w-[150%] max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 -ml-[30%]">
     <input v-model="searchTerm" placeholder="Search Pokemon" class="w-full p-2 mb-4 border rounded">
     <LoadingPokeball v-if="store.loading" />
     <div v-else class="bg-gray">
@@ -16,9 +16,9 @@
       </ul>
       <p v-else>No Pokémon found</p>
     </div>
-    <div class="mt-4  flex justify-center bg-gray-200">
+    <div class="mt-4  flex justify-center bg-gray-100">
       <button @click="showAll" 
-      class="flex mr-3 items-center justify-center w-32 px-4 py-2 text-white rounded-full transition-colors duration-200"
+      class="flex mr-3 items-center justify-center w-40 px-4 py-2 text-white rounded-full transition-colors duration-200"
       :class="showbutton ? 'bg-red-500 hover:bg-red-600' : 'bg-gray-300 text-gray-700 hover:bg-gray-400'"
      
       >
@@ -28,7 +28,7 @@
       </button>
       <button
        @click="showFavorites" 
-       class="flex items-center px-4 py-2 bg-gray-300 text-gray-700 rounded-full"
+       class="flex items-center justify-center px-4 py-2 w-40 bg-gray-300 text-gray-700 rounded-full"
        :class="!showbutton ? 'bg-red-500 text-white hover:bg-red-600' : 'bg-gray-300 text-gray-700 hover:bg-gray-400'"
        >
        
