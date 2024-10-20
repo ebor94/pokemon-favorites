@@ -23,8 +23,11 @@
           <button @click="sharePokemon" class="bg-red-500 text-white px-4 py-2 rounded-full">
             Share to my friends
           </button>
-          <button @click="toggleFavorite" class="text-2xl">
-            {{ isFavorite ? '⭐' : '☆' }}
+          <button @click="toggleFavorite(pokemon)" class="focus:outline-none">
+            <Icon 
+              name="star" 
+              :color="store.isFavorite(pokemon) ? '#ECA539' : '#BFBFBF'"
+            />
           </button>
         </div>
       </div>
@@ -36,6 +39,8 @@
   <script setup>
   import { computed } from 'vue';
   import { usePokemonStore } from '../stores/pokemon';
+  import Icon from './Icon.vue';
+
   
   const props = defineProps(['show', 'pokemon']);
   const emit = defineEmits(['close']);
