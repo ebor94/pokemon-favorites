@@ -1,94 +1,68 @@
 <template>
   <div>
-    <SearchBar @search="handleSearch" />
-    
-    <div v-if="filteredPokemons.length > 0" class="bg-white rounded-lg shadow">
-      <ul>
-        <li v-for="pokemon in filteredPokemons" :key="pokemon.name" 
-            class="flex justify-between items-center p-4 border-b last:border-b-0 cursor-pointer"
-            @click="selectPokemon(pokemon)">
-          <span class="capitalize">{{ pokemon.name }}</span>
-          <button @click.stop="toggleFavorite(pokemon.name)" class="text-2xl">
-            {{ pokemon.isFavorite ? '⭐' : '☆' }}
+    <input v-model="searchTerm" placeholder="Search Pokemon" class="w-full p-2 mb-4 border rounded">
+    <LoadingPokeball v-if="store.loading" />
+    <div v-else>
+      <ul v-if="filteredPokemons.length > 0">
+        <li v-for="pokemon in filteredPokemons" :key="pokemon.name" class="flex justify-between items-center p-2 border-b">
+          <span @click="selectPokemon(pokemon)" class="cursor-pointer">{{ pokemon.name }}</span>
+          <button @click="toggleFavorite(pokemon)" class="focus:outline-none">
+            <Icon 
+              name="star" 
+              :color="store.isFavorite(pokemon) ? '#ECA539' : '#BFBFBF'"
+            />
           </button>
         </li>
       </ul>
+      <p v-else>No Pokémon found</p>
     </div>
-
-    <NotFound v-else-if="searchTerm" @reset="resetSearch" />
-
     <div class="mt-4 flex">
-      <button 
-        @click="showAll"
-        class="flex-1 py-2 px-4 bg-red-500 text-white rounded-l-md"
-      >
-        All
-      </button>
-      <button 
-        @click="showFavorites"
-        class="flex-1 py-2 px-4 bg-gray-300 rounded-r-md"
-      >
-        Favorites
-      </button>
+      <button @click="showAll" class="flex-1 mr-5 py-2 px-4 bg-red-500 text-white  rounded-full">All</button>
+      <button @click="showFavorites" class="flex-1 py-2 px-4 bg-gray-300  rounded-full">Favorites</button>
     </div>
-
-    <PokemonModal 
-      :show="!!selectedPokemon"
-      :pokemon="selectedPokemon"
-      @close="selectedPokemon = null"
-    />
+    <PokemonModal :show="!!selectedPokemon" :pokemon="selectedPokemon" @close="selectedPokemon = null" />
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { usePokemonStore } from '../stores/pokemon';
-import SearchBar from './SearchBar.vue';
-import PokemonModal from './PokemonModal.vue';
-import NotFound from './NotFound.vue';
+import { ref, computed, onMounted } from 'vue'
+import { usePokemonStore } from '../stores/pokemon'
+import PokemonModal from './PokemonModal.vue'
+import LoadingPokeball from './LoadingPokeball.vue'
+import Icon from './Icon.vue';
 
-const store = usePokemonStore();
-const showingFavorites = ref(false);
-const searchTerm = ref('');
-const selectedPokemon = ref(null);
+
+
+const store = usePokemonStore()
+const searchTerm = ref('')
+const showingFavorites = ref(false)
+const selectedPokemon = ref(null)
 
 const filteredPokemons = computed(() => {
-  let pokemons = showingFavorites.value ? store.getFavoritePokemons : store.pokemons;
+  let pokemons = showingFavorites.value ? store.favorites : store.pokemons
   if (searchTerm.value) {
-    return pokemons.filter(p => p.name.toLowerCase().includes(searchTerm.value.toLowerCase()));
+    return pokemons.filter(p => p.name.toLowerCase().includes(searchTerm.value.toLowerCase()))
   }
-  return pokemons;
-});
+  return pokemons
+})
 
-const toggleFavorite = (pokemonName) => {
-  store.toggleFavorite(pokemonName);
-};
+const toggleFavorite = (pokemon) => {
+  store.toggleFavorite(pokemon)
+}
 
 const showAll = () => {
-  showingFavorites.value = false;
-  searchTerm.value = '';
-};
+  showingFavorites.value = false
+}
 
 const showFavorites = () => {
-  showingFavorites.value = true;
-  searchTerm.value = '';
-};
-
-const handleSearch = (term) => {
-  searchTerm.value = term;
-};
+  showingFavorites.value = true
+}
 
 const selectPokemon = async (pokemon) => {
-  selectedPokemon.value = await store.getPokemonDetails(pokemon.name);
-};
-
-const resetSearch = () => {
-  searchTerm.value = '';
-  showingFavorites.value = false;
-};
+  selectedPokemon.value = await store.fetchPokemonDetails(pokemon.name)
+}
 
 onMounted(() => {
-  store.loadFavorites();
-  store.fetchPokemons();
-});
+  store.fetchPokemons()
+})
 </script>

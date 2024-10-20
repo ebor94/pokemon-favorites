@@ -1,16 +1,17 @@
-import { defineStore } from 'pinia';
+import { defineStore } from 'pinia'
 import { pokemonService } from '../services/pokemon';
+import axios from 'axios'
 
 export const usePokemonStore = defineStore('pokemon', {
   state: () => ({
     pokemons: [],
-    favorites: {},
-    error: null,
+    favorites: [],
+    loading: false,
+    detailLoading: false,
   }),
-
   actions: {
     async fetchPokemons() {
-    
+      this.loading = true
       try {
         const response = await pokemonService.getPokemons(20, 0);
         this.pokemons = response.data.results.map(pokemon => ({
@@ -18,30 +19,13 @@ export const usePokemonStore = defineStore('pokemon', {
           isFavorite: this.favorites[pokemon.name] || false
         }));
       } catch (error) {
-        this.error = error.message;
-        console.error('Error fetching pokemons:', error);
+        console.error('Error fetching pokemons:', error)
       } finally {
-       
+        this.loading = false
       }
     },
-
-    toggleFavorite(pokemonName) {
-      this.favorites[pokemonName] = !this.favorites[pokemonName];
-      const pokemonIndex = this.pokemons.findIndex(p => p.name === pokemonName);
-      if (pokemonIndex !== -1) {
-        this.pokemons[pokemonIndex].isFavorite = this.favorites[pokemonName];
-      }
-      localStorage.setItem('favorites', JSON.stringify(this.favorites));
-    },
-
-    loadFavorites() {
-      const savedFavorites = localStorage.getItem('favorites');
-      if (savedFavorites) {
-        this.favorites = JSON.parse(savedFavorites);
-      }
-    },
-
-    async getPokemonDetails(name) {
+    async fetchPokemonDetails(name) {
+      this.detailLoading = true
       try {
         const response = await pokemonService.getPokemonByName(name);
         return {
@@ -49,15 +33,21 @@ export const usePokemonStore = defineStore('pokemon', {
           isFavorite: this.favorites[name] || false
         };
       } catch (error) {
-        console.error('Error fetching pokemon details:', error);
-        return null;
+        console.error('Error fetching pokemon details:', error)
+      } finally {
+        this.detailLoading = false
       }
     },
-  },
-
-  getters: {
-    getFavoritePokemons() {
-      return this.pokemons.filter(pokemon => this.favorites[pokemon.name]);
+    toggleFavorite(pokemon) {
+      const index = this.favorites.findIndex(p => p.name === pokemon.name)
+      if (index === -1) {
+        this.favorites.push(pokemon)
+      } else {
+        this.favorites.splice(index, 1)
+      }
+    },
+    isFavorite(pokemon) {
+      return this.favorites.some(p => p.name === pokemon.name)
     }
   }
-});
+})
