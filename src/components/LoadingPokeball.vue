@@ -35,11 +35,13 @@
   height: 50%;
   border-radius: 50px 50px 0 0;
   background-color: #f00;
+  border: 2px solid #333;
 }
 
 .pokeball-bottom {
   border-radius: 0 0 50px 50px;
   background-color: #fff;
+  border: 2px solid #333;
 }
 
 .pokeball-center {
@@ -48,7 +50,7 @@
   left: 50%;
   width: 20px;
   height: 20px;
-  background-color: #fff;
+  background-color: #fff;  
   border-radius: 50%;
   transform: translate(-50%, -50%);
   border: 4px solid #333;

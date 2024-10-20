@@ -8,7 +8,7 @@
         <img 
           :src="pokemon.sprites.other['official-artwork'].front_default" 
           :alt="pokemon.name"
-          class="absolute bottom-5 left-1/2 transform -translate-x-1/2 h-40 object-contain"
+          class="absolute bottom-4 left-1/2 transform -translate-x-1/2 h-40 object-contain"
         >
         <button @click="$emit('close')" class="absolute top-2 right-2 text-white text-xl bg-gray-800 rounded-full w-8 h-8 flex items-center justify-center">
           &times;
@@ -29,6 +29,7 @@
         </div>
       </div>
     </div>
+    
   </div>
 </template>
   

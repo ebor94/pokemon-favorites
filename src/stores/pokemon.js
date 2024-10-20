@@ -5,13 +5,12 @@ export const usePokemonStore = defineStore('pokemon', {
   state: () => ({
     pokemons: [],
     favorites: {},
-    loading: false,
     error: null,
   }),
 
   actions: {
     async fetchPokemons() {
-      this.loading = true;
+    
       try {
         const response = await pokemonService.getPokemons(20, 0);
         this.pokemons = response.data.results.map(pokemon => ({
@@ -22,7 +21,7 @@ export const usePokemonStore = defineStore('pokemon', {
         this.error = error.message;
         console.error('Error fetching pokemons:', error);
       } finally {
-        this.loading = false;
+       
       }
     },
 
